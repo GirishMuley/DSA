@@ -1,5 +1,4 @@
-// #include<iostream>
-#include<bits/stdc++.h>
+#include<iostream>
 using namespace std;
 
 class TrieNode{
@@ -17,12 +16,13 @@ class TrieNode{
     }
 };
 
-class Trie{
-    public:
-    TrieNode* root;
+class Trie {
 
-    Trie(){
-        root = new TrieNode('\0');
+public:
+    TrieNode* root;
+    /** Initialize your data structure here. */
+    Trie() {
+         root = new TrieNode('\0');
     }
 
     void insertUtil(TrieNode* root,string word){
@@ -51,10 +51,10 @@ class Trie{
         insertUtil(child,word.substr(1));
     }
 
-    void insertWord(string word){
+    /** Inserts a word into the trie. */
+    void insert(string word) {
         insertUtil(root,word);
     }
-
 
     bool searchUtil(TrieNode* root,string word){
         //base case
@@ -77,69 +77,49 @@ class Trie{
         //recursion
         return searchUtil(child,word.substr(1));
     }
+    /** Returns if the word is in the trie. */
+    bool search(string word) {
+        return searchUtil(root,word);
+    }
 
-    bool searchWord(string word){
-        return searchUtil(root,word) ;
+    bool prefixUtil(TrieNode* root,string word){
+        //base case
+        if(word.length() == 0){
+            return true;
+        }
+
+        int index = word[0] - 'A';
+        TrieNode* child;
+
+        //present
+        if(root->children[index] != NULL){
+            child = root->children[index];
+        }
+        else
+        {
+            //absent
+            return false;
+        }
+        //recursion
+        return prefixUtil(child,word.substr(1));
     }
-    
-    bool trieEmpty(TrieNode* root){
-        for(int i=0;i<26;i++){
-            if(root->children[i]){
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    
-    TrieNode* deleteWordUtil(TrieNode* root,string word,int height=0){
-        
-        //empty or Not
-        if(!root){
-            return NULL;
-        }
-        // cout<<"Inside deleteWord"<<endl;
-        
-        if(height == word.size()){
-            cout<<word.size()<<endl;
-            if(root->isTerminal){
-                root->isTerminal = false;
-            }
-            if(trieEmpty(root)){
-                delete(root);
-                root = NULL;
-            }
-            return root;
-        }
-        
-        int index = word[height] - 'A';
-        root->children[index] = deleteWordUtil(root->children[index],word,height + 1);
-        
-        if(trieEmpty(root) && root->isTerminal ==false){
-            delete(root);
-            root = NULL;
-        }
-        return root;
-    }
-    
-    void deleteWord(string word){
-        deleteWordUtil(root,word);
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    bool startsWith(string prefix) {
+        return prefixUtil(root,prefix);
     }
 };
 
 int main(){
-    TrieNode* root;
     Trie *t = new Trie();
 
-    t->insertWord("abcd");
+    t->insert("hello");
+    t->insert("help");
     
+    cout<<"Present or Not "<<t->search("help")<<endl;
     
-    cout<<"Present or Not "<<t->searchWord("abcd")<<endl;
+    cout<<"Present or Not "<<t->startsWith("hel")<<endl;
     
-    t->deleteWord("abcd");
+    cout<<"Present or Not "<<t->search("hel")<<endl;
     
-    cout<<"Present or Not "<<t->searchWord("abcd")<<endl;
-    
-     
     return 0;
 }
